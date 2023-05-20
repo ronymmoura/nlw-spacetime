@@ -1,12 +1,11 @@
 import { FastifyInstance } from "fastify";
-import { prisma } from "../lib/prisma";
 import { z } from "zod";
+import { UserRepository } from "../lib/repositories/userRepository";
+import { User } from "@prisma/client";
 
 export async function usersRoutes(app: FastifyInstance) {
-  app.get("/users", () => {
-    const users = prisma.user.findMany();
-
-    return users;
+  app.get("/users", async () => {
+    return await UserRepository.list();
   });
 
   app.get("/users/:id", async (request) => {
@@ -16,11 +15,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
     const { id } = paramsSchema.parse(request.params);
 
-    const user = await prisma.user.findUniqueOrThrow({
-      where: { id },
-    });
-
-    return user;
+    return await UserRepository.get(id);
   });
 
   app.post("/users", async (request) => {
@@ -33,9 +28,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
     const data = bodySchema.parse(request.body);
 
-    const user = await prisma.user.create({ data });
-
-    return user;
+    return await UserRepository.create(data as User);
   });
 
   app.put("/users", async (request) => {
@@ -49,9 +42,7 @@ export async function usersRoutes(app: FastifyInstance) {
 
     const data = bodySchema.parse(request.body);
 
-    const user = await prisma.user.update({ data, where: { id: data.id } });
-
-    return user;
+    return await UserRepository.update(data as User);
   });
 
   app.delete("/users/:id", async (request) => {
@@ -61,8 +52,6 @@ export async function usersRoutes(app: FastifyInstance) {
 
     const { id } = paramsSchema.parse(request.params);
 
-    await prisma.user.delete({
-      where: { id },
-    });
+    await UserRepository.delete(id);
   });
 }
