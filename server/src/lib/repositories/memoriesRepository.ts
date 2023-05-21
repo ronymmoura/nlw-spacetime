@@ -20,10 +20,10 @@ export const MemoriesRepository = {
     return memories;
   },
 
-  async listById(id: string) {
+  async listByUserId(userId: string) {
     const memories = await prisma.memory.findMany({
       where: {
-        id,
+        userId,
       },
       orderBy: {
         createdAt: "asc",

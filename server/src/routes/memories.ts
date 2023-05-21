@@ -11,7 +11,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
   app.get("/memories", async (request) => {
     const { sub: userId } = request.user;
 
-    const memories = await MemoriesRepository.listById(userId);
+    const memories = await MemoriesRepository.listByUserId(userId);
 
     return memories.map((memory) => ({
       ...memory,
@@ -42,7 +42,7 @@ export async function memoriesRoutes(app: FastifyInstance) {
 
     const bodySchema = z.object({
       content: z.string(),
-      coverUrl: z.string().default("https://github.com/ronymmoura.png"),
+      coverUrl: z.string(),
       isPublic: z.coerce.boolean().default(false),
     });
 
